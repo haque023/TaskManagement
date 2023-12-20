@@ -25,9 +25,14 @@ builder.Services.AddDbContext<DataContext>(opt =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt =>
 {
     opt.Password.RequiredLength = 4;
+    opt.Password.RequireNonAlphanumeric = false;
+    opt.Password.RequireDigit= false;
+    opt.Password.RequireLowercase= false;
+    opt.Password.RequireUppercase= false;
 }).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddTransient<ITaskListRepository, TaskListRepository>();
 
 builder.Services.AddAuthentication(auth =>
 {

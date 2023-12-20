@@ -16,5 +16,6 @@ namespace TaskManagementSystem.ViewModel
         [Required]
         [StringLength(50, MinimumLength = 4)]
         public string ConfirmPassword { get; set; }
+        public string Role { get; set; }
     }
 }

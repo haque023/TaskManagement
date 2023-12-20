@@ -11,8 +11,8 @@ namespace TaskManagementSystem.Controllers
 
     public class AuthController : ControllerBase
     {
-        private IUserService _userService;
-        public AuthController(IUserService userService)
+        private IUserRepository _userService;
+        public AuthController(IUserRepository userService)
         {
             _userService = userService;
         }

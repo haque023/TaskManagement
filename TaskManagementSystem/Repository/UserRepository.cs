@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -10,15 +11,17 @@ using TaskManagementSystem.ViewModel;
 
 namespace TaskManagementSystem.Repository
 {
-    public class UserService : IUserService
+    public class UserRepository : IUserRepository
     {
         private UserManager<IdentityUser> _userManger;
         private IConfiguration _configuration;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public UserRepository(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManger = userManager;
             _configuration = configuration;
+            _roleManager = roleManager;
         }
         public async Task<object> LoginUserAsync(LoginDTO model)
         {
@@ -41,12 +44,17 @@ namespace TaskManagementSystem.Repository
                     IsSuccess = false,
                 };
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim("Email", model.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
             };
 
+            var userRoles = await _userManger.GetRolesAsync(user);
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Auth:Key"]));
 
             var token = new JwtSecurityToken(
@@ -87,6 +95,12 @@ namespace TaskManagementSystem.Repository
             var result = await _userManger.CreateAsync(identityUser, model.Password);
             if (result.Succeeded)
             {
+                if (!await _roleManager.RoleExistsAsync(model.Role))
+                    await _roleManager.CreateAsync(new IdentityRole(model.Role));
+
+                if (await _roleManager.RoleExistsAsync(model.Role))
+                    await _userManger.AddToRoleAsync(identityUser, model.Role);
+
                 return new { Message = "User Create Successfully", Code = 200 };
             }
             else

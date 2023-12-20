@@ -2,7 +2,7 @@
 
 namespace TaskManagementSystem.IRepository
 {
-    public interface IUserService
+    public interface IUserRepository
     {
 
 

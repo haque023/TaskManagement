@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using TaskManagementSystem.Data;
+using TaskManagementSystem.IRepository;
 using TaskManagementSystem.Model;
 
 namespace TaskManagementSystem.Controllers
@@ -14,18 +15,25 @@ namespace TaskManagementSystem.Controllers
 
     public class TaskController : GenericCrudController<TaskList>
     {
-        public TaskController(DataContext dataContext) : base(dataContext) { }
+        private readonly ITaskListRepository _Repository;
+        public TaskController(DataContext dataContext, ITaskListRepository Repository) : base(dataContext)
+        {
+            _Repository = Repository;
+        }
 
         [HttpPost]
         [Route("UpdateStatus")]
-
-        public virtual async Task<IActionResult> UpdateStatus(int id, string status)
+        public async Task<IActionResult> UpdateStatus(int id, string status)
         {
-            var data = await _context.Set<TaskList>().FindAsync(id);
-            data.Status = status;
-            _context.Entry(data).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return Ok(new { Message = "Task Update", Code = 200 });
+            try
+            {
+                var data = await _Repository.UpdateStatus(id, status);
+                return Ok(data);
+
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
         }
 
 
