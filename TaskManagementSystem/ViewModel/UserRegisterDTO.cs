@@ -2,7 +2,7 @@
 
 namespace TaskManagementSystem.ViewModel
 {
-    public class UserRegister
+    public class UserRegisterDTO
     {
         [Required]
         [StringLength(50)]
