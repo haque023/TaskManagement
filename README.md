@@ -5,9 +5,10 @@ sqlite competibility
 Script: No db script needed
 Code First Approach used
 
-Installation: Add Migration
-Command: Add-Migration Init
-        update-database
+Installation:
+Command: 
+1: Add-Migration Init
+2: Update-Database
 
 Test User: email: admin@admin.com
             pass: 1234
