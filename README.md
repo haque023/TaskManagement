@@ -1,5 +1,5 @@
 Requirement:
-.NET 7
+.NET 7 &
 sqlite competibility 
 
 Script: No db script needed
